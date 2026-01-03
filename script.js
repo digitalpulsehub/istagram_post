@@ -1,6 +1,6 @@
 // Unsplash API Configuration - Uso un access key pubblico funzionante
 // Access Key pubblico da Unsplash per demo (puoi sostituirlo con il tuo)
-const unsplashAccessKey = '7pWZ3J4W8k4K9x4N9R7D8T3V2B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3';
+const unsplashAccessKey = '_f2bL-3s-wq6HC7M_0P-9GDggh5aphw9SN1xSgVa3ho';
 // Back-up access key se il primo non funziona
 const backupAccessKey = 'YOUR_PUBLIC_UNSPLASH_ACCESS_KEY'; // Sostituisci con il tuo access key
 
@@ -438,3 +438,4 @@ function useSampleImages() {
 
 // Imposta valore iniziale della ricerca
 searchInput.value = "Italy";
+
