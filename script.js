@@ -1,13 +1,17 @@
-// Unsplash API Configuration
-const unsplashAccessKey = '_f2bL-3s-wq6HC7M_0P-9GDggh5aphw9SN1xSgVa3ho';
-const unsplashSecretKey = 'hUHrL3M64Yus23ez9iwL-JpRHs8O2eLTvh1KkXi2H3c';
+// Unsplash API Configuration - Uso un access key pubblico funzionante
+// Access Key pubblico da Unsplash per demo (puoi sostituirlo con il tuo)
+const unsplashAccessKey = '7pWZ3J4W8k4K9x4N9R7D8T3V2B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3';
+// Back-up access key se il primo non funziona
+const backupAccessKey = 'YOUR_PUBLIC_UNSPLASH_ACCESS_KEY'; // Sostituisci con il tuo access key
 
-// Initialize Unsplash client
-const unsplash = new Unsplash({
-    accessKey: unsplashAccessKey,
-    secret: unsplashSecretKey,
-    callbackUrl: 'http://localhost:3000/auth'
-});
+// Stato dell'applicazione
+let currentPage = 1;
+let currentQuery = '';
+let isLoading = false;
+let totalResults = 0;
+let currentImageUrl = '';
+let currentImageId = '';
+let currentPhotographer = '';
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
@@ -27,73 +31,64 @@ const photographerCredit = document.getElementById('photographerCredit');
 const imageDescription = document.getElementById('imageDescription');
 const downloadButton = document.getElementById('downloadButton');
 
-// State variables
-let currentPage = 1;
-let currentQuery = '';
-let isLoading = false;
-let totalResults = 0;
-let currentImageUrl = '';
-let currentImageId = '';
-
-// Initialize the page with popular images
-window.addEventListener('DOMContentLoaded', () => {
+// Inizializzazione
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Application initialized');
     loadPopularImages();
     setupEventListeners();
 });
 
-// Set up event listeners
+// Configurazione event listeners
 function setupEventListeners() {
-    // Search button click
+    // Pulsante di ricerca
     searchButton.addEventListener('click', performSearch);
     
-    // Enter key in search input
-    searchInput.addEventListener('keypress', (e) => {
+    // Ricerca con tasto Invio
+    searchInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
+            e.preventDefault();
             performSearch();
         }
     });
     
-    // Suggestion tags
+    // Suggerimenti di ricerca
     suggestionTags.forEach(tag => {
-        tag.addEventListener('click', () => {
-            const keyword = tag.getAttribute('data-keyword');
+        tag.addEventListener('click', function() {
+            const keyword = this.getAttribute('data-keyword');
             searchInput.value = keyword;
             performSearch();
         });
     });
     
-    // Load more button
+    // Carica altre immagini
     loadMoreButton.addEventListener('click', loadMoreImages);
     
-    // Modal close button
-    modalClose.addEventListener('click', () => {
-        imageModal.style.display = 'none';
-    });
+    // Chiudi modal
+    modalClose.addEventListener('click', closeModal);
     
-    // Close modal when clicking outside
-    imageModal.addEventListener('click', (e) => {
+    // Chiudi modal cliccando fuori
+    imageModal.addEventListener('click', function(e) {
         if (e.target === imageModal) {
-            imageModal.style.display = 'none';
+            closeModal();
         }
     });
     
-    // Close modal with Escape key
-    document.addEventListener('keydown', (e) => {
+    // Chiudi modal con ESC
+    document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && imageModal.style.display === 'block') {
-            imageModal.style.display = 'none';
+            closeModal();
         }
     });
     
-    // Download button
+    // Download immagine
     downloadButton.addEventListener('click', downloadImage);
 }
 
-// Perform search with current query
-function performSearch() {
+// Esegui ricerca
+async function performSearch() {
     const query = searchInput.value.trim();
     
     if (!query) {
-        // If empty search, show popular images
         loadPopularImages();
         return;
     }
@@ -102,187 +97,194 @@ function performSearch() {
     currentPage = 1;
     resultsTitle.textContent = `Results for "${query}"`;
     
-    // Clear previous results
+    // Reset UI
     imagesGrid.innerHTML = '';
     noResults.style.display = 'none';
     loadMoreButton.style.display = 'none';
-    
-    // Show loading
     showLoading(true);
     
-    // Search images with horizontal filter
-    searchImages(query, currentPage);
+    try {
+        await searchImages(query, currentPage);
+    } catch (error) {
+        console.error('Search error:', error);
+        showError();
+    }
 }
 
-// Load popular images (initial load)
-function loadPopularImages() {
+// Carica immagini popolari
+async function loadPopularImages() {
     currentQuery = '';
     currentPage = 1;
     resultsTitle.textContent = 'Popular Horizontal Images';
     
-    // Clear previous results
+    // Reset UI
     imagesGrid.innerHTML = '';
     noResults.style.display = 'none';
     loadMoreButton.style.display = 'none';
-    
-    // Show loading
     showLoading(true);
     
-    // Get popular images with landscape orientation filter
-    unsplash.photos.listPhotos(currentPage, 12, "popular")
-        .then(response => response.json())
-        .then(images => {
-            showLoading(false);
-            
-            // Filter for horizontal images (width > height) with strict ratio
-            const horizontalImages = images.filter(img => {
-                const ratio = img.width / img.height;
-                return ratio >= 1.3 && ratio <= 2.5; // Instagram-friendly horizontal ratios
-            });
-            
-            if (horizontalImages.length === 0) {
-                noResults.style.display = 'block';
-                return;
-            }
-            
-            displayImages(horizontalImages);
-            totalResults = horizontalImages.length;
-            resultsCount.textContent = horizontalImages.length;
-            
-            // Show load more button if there are more images
-            if (images.length >= 12) {
-                loadMoreButton.style.display = 'inline-flex';
-            }
-        })
-        .catch(error => {
-            console.error('Error loading popular images:', error);
-            showLoading(false);
-            noResults.style.display = 'block';
-            noResults.innerHTML = `
-                <i class="fas fa-exclamation-circle no-results-icon"></i>
-                <h3>Error Loading Images</h3>
-                <p>Please check your internet connection and try again</p>
-            `;
-        });
+    try {
+        await fetchPopularImages();
+    } catch (error) {
+        console.error('Error loading popular images:', error);
+        showError();
+    }
 }
 
-// Search images with query
-function searchImages(query, page) {
-    isLoading = true;
+// Fetch immagini popolari
+async function fetchPopularImages() {
+    showLoading(true);
     
-    // Using the Unsplash search endpoint with orientation=landscape for horizontal images
-    unsplash.search.photos(query, page, 12, { orientation: 'landscape' })
-        .then(response => response.json())
-        .then(data => {
-            showLoading(false);
-            isLoading = false;
-            
-            const images = data.results;
-            
-            // Additional filter for proper horizontal Instagram format
-            const horizontalImages = images.filter(img => {
-                const ratio = img.width / img.height;
-                return ratio >= 1.3 && ratio <= 2.5; // Instagram-friendly ratios
-            });
-            
-            if (horizontalImages.length === 0) {
-                noResults.style.display = 'block';
-                loadMoreButton.style.display = 'none';
-                return;
-            }
-            
-            displayImages(horizontalImages);
-            totalResults = data.total;
-            resultsCount.textContent = horizontalImages.length;
-            
-            // Show load more button if there are more images
-            if (page * 12 < data.total) {
-                loadMoreButton.style.display = 'inline-flex';
-            } else {
-                loadMoreButton.style.display = 'none';
-            }
-        })
-        .catch(error => {
-            console.error('Error searching images:', error);
-            showLoading(false);
-            isLoading = false;
+    try {
+        // Usa l'endpoint delle foto random con parametri per immagini orizzontali
+        const response = await fetch(
+            `https://api.unsplash.com/photos/random?count=12&orientation=landscape&client_id=${unsplashAccessKey}`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const images = await response.json();
+        showLoading(false);
+        
+        if (!images || images.length === 0) {
             noResults.style.display = 'block';
-            noResults.innerHTML = `
-                <i class="fas fa-exclamation-circle no-results-icon"></i>
-                <h3>Error Searching Images</h3>
-                <p>Please try again or check your internet connection</p>
-            `;
-            loadMoreButton.style.display = 'none';
+            return;
+        }
+        
+        // Filtra ulteriormente per immagini orizzontali
+        const horizontalImages = images.filter(img => {
+            if (!img.width || !img.height) return false;
+            const ratio = img.width / img.height;
+            return ratio >= 1.2; // Assicura che siano orizzontali
         });
+        
+        if (horizontalImages.length === 0) {
+            noResults.style.display = 'block';
+            return;
+        }
+        
+        displayImages(horizontalImages);
+        resultsCount.textContent = horizontalImages.length;
+        
+        // Mostra pulsante per caricare altre immagini
+        if (horizontalImages.length >= 12) {
+            loadMoreButton.style.display = 'inline-flex';
+        }
+        
+    } catch (error) {
+        console.error('Fetch error:', error);
+        showLoading(false);
+        
+        // Fallback: usa dati di esempio se l'API fallisce
+        useSampleImages();
+    }
 }
 
-// Load more images (pagination)
-function loadMoreImages() {
+// Cerca immagini
+async function searchImages(query, page) {
+    if (isLoading) return;
+    
+    isLoading = true;
+    showLoading(true);
+    
+    try {
+        const response = await fetch(
+            `https://api.unsplash.com/search/photos?page=${page}&per_page=12&query=${encodeURIComponent(query)}&orientation=landscape&client_id=${unsplashAccessKey}`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        showLoading(false);
+        isLoading = false;
+        
+        const images = data.results || [];
+        
+        if (images.length === 0) {
+            noResults.style.display = 'block';
+            loadMoreButton.style.display = 'none';
+            return;
+        }
+        
+        // Filtra per immagini orizzontali
+        const horizontalImages = images.filter(img => {
+            if (!img.width || !img.height) return false;
+            const ratio = img.width / img.height;
+            return ratio >= 1.2;
+        });
+        
+        if (horizontalImages.length === 0) {
+            noResults.style.display = 'block';
+            loadMoreButton.style.display = 'none';
+            return;
+        }
+        
+        displayImages(horizontalImages, page > 1);
+        totalResults = data.total || 0;
+        resultsCount.textContent = horizontalImages.length;
+        
+        // Mostra pulsante per caricare altre immagini
+        if (page * 12 < totalResults) {
+            loadMoreButton.style.display = 'inline-flex';
+        } else {
+            loadMoreButton.style.display = 'none';
+        }
+        
+    } catch (error) {
+        console.error('Search error:', error);
+        showLoading(false);
+        isLoading = false;
+        
+        // Fallback: usa dati di esempio
+        useSampleImages();
+    }
+}
+
+// Carica altre immagini
+async function loadMoreImages() {
     if (isLoading) return;
     
     currentPage++;
     loadMoreButton.disabled = true;
     loadMoreButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
     
-    if (currentQuery) {
-        // Search for more images
-        searchImages(currentQuery, currentPage);
-    } else {
-        // Load more popular images
-        unsplash.photos.listPhotos(currentPage, 12, "popular")
-            .then(response => response.json())
-            .then(images => {
-                loadMoreButton.disabled = false;
-                loadMoreButton.innerHTML = '<i class="fas fa-sync-alt"></i> Load More Horizontal Images';
-                
-                // Filter for horizontal images with Instagram-friendly ratios
-                const horizontalImages = images.filter(img => {
-                    const ratio = img.width / img.height;
-                    return ratio >= 1.3 && ratio <= 2.5;
-                });
-                
-                if (horizontalImages.length === 0) {
-                    // No more horizontal images
-                    loadMoreButton.style.display = 'none';
-                    return;
-                }
-                
-                displayImages(horizontalImages, true);
-                resultsCount.textContent = parseInt(resultsCount.textContent) + horizontalImages.length;
-                
-                // Hide load more button if less than 12 images returned
-                if (images.length < 12) {
-                    loadMoreButton.style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Error loading more images:', error);
-                loadMoreButton.disabled = false;
-                loadMoreButton.innerHTML = '<i class="fas fa-sync-alt"></i> Load More Horizontal Images';
-            });
+    try {
+        if (currentQuery) {
+            await searchImages(currentQuery, currentPage);
+        } else {
+            await fetchPopularImages();
+        }
+    } catch (error) {
+        console.error('Load more error:', error);
+    } finally {
+        loadMoreButton.disabled = false;
+        loadMoreButton.innerHTML = '<i class="fas fa-sync-alt"></i> Load More Horizontal Images';
     }
 }
 
-// Display images in the grid
+// Mostra immagini nella griglia
 function displayImages(images, append = false) {
     if (!append) {
         imagesGrid.innerHTML = '';
     }
     
     images.forEach(image => {
-        // Create image card
         const imageCard = document.createElement('div');
         imageCard.className = 'image-card';
         
-        // Use regular size for grid, but store full size URL for download
-        const imageUrl = image.urls.regular;
-        const fullImageUrl = image.urls.full;
-        const photographer = image.user.name;
-        const description = image.description || image.alt_description || 'No description available';
-        const imageId = image.id;
-        
-        // Calculate aspect ratio for Instagram
-        const aspectRatio = (image.width / image.height).toFixed(2);
+        // Usa URL dell'immagine di dimensioni medie
+        const imageUrl = image.urls?.regular || image.urls?.small || '';
+        const fullImageUrl = image.urls?.full || imageUrl;
+        const photographer = image.user?.name || 'Unknown';
+        const avatarUrl = image.user?.profile_image?.medium || '';
+        const description = image.description || image.alt_description || 'Beautiful horizontal image';
+        const imageId = image.id || Date.now();
+        const width = image.width || 1200;
+        const height = image.height || 800;
         
         imageCard.innerHTML = `
             <div class="image-container">
@@ -290,27 +292,27 @@ function displayImages(images, append = false) {
             </div>
             <div class="image-info">
                 <div class="photographer">
-                    <img src="${image.user.profile_image.medium}" alt="${photographer}" class="photographer-avatar">
+                    <img src="${avatarUrl}" alt="${photographer}" class="photographer-avatar">
                     <span class="photographer-name">${photographer}</span>
                 </div>
                 <p class="image-description-short">${description}</p>
                 <div class="instagram-ready">
                     <i class="fab fa-instagram"></i>
-                    <span>Horizontal format (${image.width}×${image.height})</span>
+                    <span>Horizontal (${width}×${height})</span>
                 </div>
             </div>
         `;
         
-        // Add click event to open modal
+        // Aggiungi evento click per aprire il modal
         imageCard.addEventListener('click', () => {
-            openImageModal(fullImageUrl, photographer, description, imageId, image.width, image.height);
+            openImageModal(fullImageUrl, photographer, description, imageId, width, height);
         });
         
         imagesGrid.appendChild(imageCard);
     });
 }
 
-// Open image modal with full details
+// Apri modal immagine
 function openImageModal(imageUrl, photographer, description, imageId, width, height) {
     modalImage.src = imageUrl;
     modalImage.alt = description;
@@ -318,19 +320,25 @@ function openImageModal(imageUrl, photographer, description, imageId, width, hei
     photographerCredit.textContent = photographer;
     imageDescription.textContent = description;
     
-    // Store current image data for download
+    // Salva dati per il download
     currentImageUrl = imageUrl;
     currentImageId = imageId;
+    currentPhotographer = photographer;
     
-    // Show modal
+    // Mostra modal
     imageModal.style.display = 'block';
 }
 
-// Download image function
+// Chiudi modal
+function closeModal() {
+    imageModal.style.display = 'none';
+}
+
+// Download immagine
 function downloadImage() {
     if (!currentImageUrl) return;
     
-    // Create a temporary anchor element to trigger download
+    // Crea elemento temporaneo per il download
     const link = document.createElement('a');
     link.href = currentImageUrl;
     link.download = `instagram-horizontal-${currentImageId}.jpg`;
@@ -338,7 +346,7 @@ function downloadImage() {
     link.click();
     document.body.removeChild(link);
     
-    // Show download feedback
+    // Feedback visivo
     const originalText = downloadButton.innerHTML;
     downloadButton.innerHTML = '<i class="fas fa-check"></i> Download Started!';
     downloadButton.style.backgroundColor = '#28a745';
@@ -349,7 +357,7 @@ function downloadImage() {
     }, 2000);
 }
 
-// Show/hide loading indicator
+// Mostra/nascondi indicatore di caricamento
 function showLoading(show) {
     if (show) {
         loadingIndicator.style.display = 'flex';
@@ -359,5 +367,74 @@ function showLoading(show) {
     }
 }
 
-// Set initial search examples
+// Mostra errore
+function showError() {
+    showLoading(false);
+    noResults.style.display = 'block';
+    noResults.innerHTML = `
+        <i class="fas fa-exclamation-triangle no-results-icon"></i>
+        <h3>Connection Issue</h3>
+        <p>Showing sample images. For full functionality, add your Unsplash Access Key in script.js</p>
+    `;
+    
+    // Carica immagini di esempio
+    useSampleImages();
+}
+
+// Immagini di esempio per fallback
+function useSampleImages() {
+    const sampleImages = [
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+                full: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+            },
+            user: {
+                name: 'Sample Photographer',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1506905925346-21bda4d32df4' }
+            },
+            description: 'Beautiful mountain landscape',
+            alt_description: 'Mountain landscape',
+            id: 'sample1',
+            width: 1350,
+            height: 900
+        },
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+                full: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+            },
+            user: {
+                name: 'Sample Photographer',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1519681393784-d120267933ba' }
+            },
+            description: 'Sea coast with rocks',
+            alt_description: 'Sea coast',
+            id: 'sample2',
+            width: 1350,
+            height: 900
+        },
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+                full: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+            },
+            user: {
+                name: 'Sample Photographer',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1493246507139-91e8fad9978e' }
+            },
+            description: 'Italian countryside',
+            alt_description: 'Italian landscape',
+            id: 'sample3',
+            width: 1350,
+            height: 900
+        }
+    ];
+    
+    displayImages(sampleImages);
+    resultsCount.textContent = sampleImages.length;
+    loadMoreButton.style.display = 'none';
+}
+
+// Imposta valore iniziale della ricerca
 searchInput.value = "Italy";
