@@ -1,703 +1,453 @@
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: #262626;
-    line-height: 1.6;
-    min-height: 100vh;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Header Styles */
-.header {
-    text-align: center;
-    padding: 40px 0 25px;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 25px;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 10px;
-}
-
-.logo-icon {
-    font-size: 32px;
-    color: #833ab4;
-}
-
-.logo-text {
-    font-size: 32px;
-    font-weight: 700;
-    background: linear-gradient(45deg, #833ab4, #c13584, #e1306c, #fd1d1d);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.tagline {
-    font-size: 18px;
-    color: #262626;
-    font-weight: 500;
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
-
-.purpose-note {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #f8f9fa;
-    padding: 10px 18px;
-    border-radius: 10px;
-    font-size: 14px;
-    color: #495057;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.purpose-note i {
-    color: #833ab4;
-    font-size: 16px;
-}
-
-/* Search Section */
-.search-section {
-    margin-bottom: 35px;
-}
-
-.search-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.search-input-wrapper {
-    display: flex;
-    align-items: center;
-    background-color: #fafafa;
-    border: 1px solid #dbdbdb;
-    border-radius: 12px;
-    padding: 10px 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s ease;
-    margin-bottom: 15px;
-}
-
-.search-input-wrapper:focus-within {
-    border-color: #a8a8a8;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-}
-
-.search-icon {
-    font-size: 18px;
-    color: #8e8e8e;
-    margin-right: 15px;
-}
-
-.search-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 16px;
-    padding: 12px 0;
-    color: #262626;
-    font-family: 'Inter', sans-serif;
-}
-
-.search-input::placeholder {
-    color: #a8a8a8;
-}
-
-.search-button {
-    background-color: #833ab4;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.2s ease;
-    font-family: 'Inter', sans-serif;
-}
-
-.search-button:hover {
-    background-color: #7229a3;
-}
-
-.suggestions {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.suggestion-title {
-    font-size: 14px;
-    color: #8e8e8e;
-    font-weight: 500;
-}
-
-.suggestion-tag {
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 14px;
-    color: #262626;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Inter', sans-serif;
-}
-
-.suggestion-tag:hover {
-    background-color: #e0e0e0;
-}
-
-.format-note {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #f8f0ff;
-    border: 1px solid #e9d4ff;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #6f42c1;
-}
-
-.format-note i {
-    font-size: 14px;
-}
-
-/* Results Section */
-.results-section {
-    margin-bottom: 60px;
-}
-
-.results-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.results-header h2 {
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.results-count {
-    background-color: #f8f8f8;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    color: #8e8e8e;
-}
-
-/* Images Grid */
-.images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.image-card {
-    background-color: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    position: relative;
-}
-
-.image-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.image-card::before {
-    content: "VERTICAL";
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background-color: rgba(131, 58, 180, 0.9);
-    color: white;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 4px;
-    z-index: 2;
-}
-
-.image-container {
-    width: 100%;
-    height: 350px; /* Altezza maggiore per immagini verticali */
-    overflow: hidden;
-    background-color: #f8f8f8;
-}
-
-.image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.image-card:hover .image-container img {
-    transform: scale(1.05);
-}
-
-.image-info {
-    padding: 18px;
-}
-
-.photographer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.photographer-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: #f0f0f0;
-}
-
-.photographer-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #262626;
-}
-
-.image-description-short {
-    font-size: 14px;
-    color: #8e8e8e;
-    line-height: 1.5;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-.instagram-ready {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #833ab4;
-    margin-top: 10px;
-}
-
-.instagram-ready i {
-    font-size: 14px;
-}
-
-/* Loading and No Results States */
-.loading-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    text-align: center;
-    display: none;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #f0f0f0;
-    border-top: 4px solid #833ab4;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.no-results {
-    text-align: center;
-    padding: 60px 20px;
-    display: none;
-}
-
-.no-results-icon {
-    font-size: 60px;
-    color: #dbdbdb;
-    margin-bottom: 20px;
-}
-
-.no-results h3 {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #262626;
-}
-
-.no-results p {
-    font-size: 16px;
-    color: #8e8e8e;
-}
-
-/* Load More Button */
-.load-more-container {
-    text-align: center;
-    margin-top: 30px;
-}
-
-.load-more-button {
-    background-color: #f8f8f8;
-    color: #262626;
-    border: 1px solid #dbdbdb;
-    border-radius: 8px;
-    padding: 14px 32px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s ease;
-    font-family: 'Inter', sans-serif;
-}
-
-.load-more-button:hover {
-    background-color: #f0f0f0;
-    border-color: #c7c7c7;
-}
-
-.load-more-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Footer */
-.footer {
-    border-top: 1px solid #f0f0f0;
-    padding: 30px 0;
-    margin-top: 40px;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.api-credit p {
-    font-size: 14px;
-    color: #8e8e8e;
-    margin-bottom: 5px;
-}
-
-.attribution-note {
-    font-size: 12px;
-    color: #a8a8a8;
-    max-width: 300px;
-}
-
-.footer-info p {
-    font-size: 14px;
-    color: #8e8e8e;
-    margin-bottom: 5px;
-    text-align: right;
-}
-
-.footer-note {
-    font-size: 12px;
-    color: #a8a8a8;
-}
-
-/* Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.modal-content {
-    max-width: 500px;
-    margin: 40px auto;
-    background-color: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-}
-
-.modal-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    font-size: 20px;
-    color: #262626;
-    transition: background-color 0.2s ease;
-}
-
-.modal-close:hover {
-    background-color: white;
-}
-
-.modal-image-container {
-    width: 100%;
-    max-height: 700px;
-    overflow: hidden;
-}
-
-.modal-image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.modal-info {
-    padding: 25px;
-}
-
-.photographer-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.photographer-info i {
-    font-size: 40px;
-    color: #8e8e8e;
-}
-
-.photographer-info h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.photographer-credit {
-    font-size: 14px;
-    color: #666;
-}
-
-.image-description p {
-    font-size: 16px;
-    color: #262626;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-.image-specs {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 25px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-}
-
-.spec-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #495057;
-}
-
-.spec-item i {
-    color: #833ab4;
-}
-
-.download-info {
-    text-align: center;
-}
-
-.download-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    font-family: 'Inter', sans-serif;
-}
-
-.download-button:hover {
-    background-color: #218838;
-}
-
-.download-note {
-    font-size: 13px;
-    color: #6c757d;
-    margin-top: 10px;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .header {
-        padding: 30px 0 20px;
+// Unsplash API Configuration
+// Sostituisci con il tuo Access Key di Unsplash
+const unsplashAccessKey = 'TUO_ACCESS_KEY_QUI';
+
+// Se non hai un Access Key, lascia la stringa vuota e il sito mostrerà immagini di esempio
+// const unsplashAccessKey = '';
+
+// Stato dell'applicazione
+let currentPage = 1;
+let currentQuery = '';
+let isLoading = false;
+let totalResults = 0;
+let currentImageUrl = '';
+let currentImageId = '';
+let currentPhotographer = '';
+
+// DOM Elements
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton');
+const suggestionTags = document.querySelectorAll('.suggestion-tag');
+const imagesGrid = document.getElementById('imagesGrid');
+const loadingIndicator = document.getElementById('loadingIndicator');
+const noResults = document.getElementById('noResults');
+const resultsTitle = document.getElementById('resultsTitle');
+const resultsCount = document.getElementById('resultsCount');
+const loadMoreButton = document.getElementById('loadMoreButton');
+const imageModal = document.getElementById('imageModal');
+const modalClose = document.getElementById('modalClose');
+const modalImage = document.getElementById('modalImage');
+const photographerName = document.getElementById('photographerName');
+const photographerCredit = document.getElementById('photographerCredit');
+const imageDescription = document.getElementById('imageDescription');
+const downloadButton = document.getElementById('downloadButton');
+
+// Inizializzazione
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Application initialized');
+    if (unsplashAccessKey && unsplashAccessKey !== 'TUO_ACCESS_KEY_QUI') {
+        loadPopularImages();
+    } else {
+        // Mostra immagini di esempio se non c'è un access key
+        showError();
+        useSampleImages();
+    }
+    setupEventListeners();
+});
+
+// Configurazione event listeners
+function setupEventListeners() {
+    // Pulsante di ricerca
+    searchButton.addEventListener('click', performSearch);
+    
+    // Ricerca con tasto Invio
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            performSearch();
+        }
+    });
+    
+    // Suggerimenti di ricerca
+    suggestionTags.forEach(tag => {
+        tag.addEventListener('click', function() {
+            const keyword = this.getAttribute('data-keyword');
+            searchInput.value = keyword;
+            performSearch();
+        });
+    });
+    
+    // Carica altre immagini
+    loadMoreButton.addEventListener('click', loadMoreImages);
+    
+    // Chiudi modal
+    modalClose.addEventListener('click', closeModal);
+    
+    // Chiudi modal cliccando fuori
+    imageModal.addEventListener('click', function(e) {
+        if (e.target === imageModal) {
+            closeModal();
+        }
+    });
+    
+    // Chiudi modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && imageModal.style.display === 'block') {
+            closeModal();
+        }
+    });
+    
+    // Download immagine
+    downloadButton.addEventListener('click', downloadImage);
+}
+
+// Esegui ricerca
+async function performSearch() {
+    const query = searchInput.value.trim();
+    
+    if (!query) {
+        loadPopularImages();
+        return;
     }
     
-    .logo-text {
-        font-size: 28px;
-    }
+    currentQuery = query;
+    currentPage = 1;
+    resultsTitle.textContent = `Results for "${query}"`;
     
-    .purpose-note {
-        font-size: 13px;
-        padding: 8px 15px;
-    }
+    // Reset UI
+    imagesGrid.innerHTML = '';
+    noResults.style.display = 'none';
+    loadMoreButton.style.display = 'none';
+    showLoading(true);
     
-    .search-input-wrapper {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 0;
-        overflow: hidden;
-    }
-    
-    .search-input-wrapper > * {
-        padding: 12px 20px;
-    }
-    
-    .search-icon {
-        display: none;
-    }
-    
-    .search-input {
-        border-bottom: 1px solid #eee;
-    }
-    
-    .search-button {
-        justify-content: center;
-    }
-    
-    .suggestions {
-        justify-content: center;
-    }
-    
-    .images-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 15px;
-    }
-    
-    .image-container {
-        height: 320px;
-    }
-    
-    .results-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .footer-info p {
-        text-align: center;
-    }
-    
-    .modal-content {
-        margin: 20px auto;
-        max-width: 90%;
-    }
-    
-    .modal-image-container {
-        max-height: 500px;
+    try {
+        await searchImages(query, currentPage);
+    } catch (error) {
+        console.error('Search error:', error);
+        showError();
     }
 }
 
-@media (max-width: 480px) {
-    .container {
-        padding: 0 15px;
-    }
+// Carica immagini popolari
+async function loadPopularImages() {
+    currentQuery = '';
+    currentPage = 1;
+    resultsTitle.textContent = 'Popular Horizontal Images';
     
-    .logo-container {
-        flex-direction: column;
-        gap: 5px;
-    }
+    // Reset UI
+    imagesGrid.innerHTML = '';
+    noResults.style.display = 'none';
+    loadMoreButton.style.display = 'none';
+    showLoading(true);
     
-    .logo-text {
-        font-size: 24px;
-    }
-    
-    .tagline {
-        font-size: 16px;
-    }
-    
-    .images-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .image-container {
-        height: 400px; /* Ancora più alto per mobile */
-    }
-    
-    .modal-info {
-        padding: 20px;
-    }
-    
-    .purpose-note {
-        font-size: 12px;
-        text-align: left;
-    }
-    
-    .image-specs {
-        flex-direction: column;
+    try {
+        await fetchPopularImages(currentPage);
+    } catch (error) {
+        console.error('Error loading popular images:', error);
+        showError();
     }
 }
+
+// Fetch immagini popolari (usa la ricerca con query "landscape")
+async function fetchPopularImages(page = 1) {
+    showLoading(true);
+    
+    try {
+        const response = await fetch(
+            `https://api.unsplash.com/search/photos?page=${page}&per_page=12&query=landscape&orientation=landscape&client_id=${unsplashAccessKey}`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        showLoading(false);
+        
+        const images = data.results || [];
+        
+        if (!images || images.length === 0) {
+            noResults.style.display = 'block';
+            return;
+        }
+        
+        // Filtra ulteriormente per immagini orizzontali
+        const horizontalImages = images.filter(img => {
+            if (!img.width || !img.height) return false;
+            const ratio = img.width / img.height;
+            return ratio >= 1.2; // Assicura che siano orizzontali
+        });
+        
+        if (horizontalImages.length === 0) {
+            noResults.style.display = 'block';
+            return;
+        }
+        
+        displayImages(horizontalImages, page > 1);
+        totalResults = data.total || 0;
+        resultsCount.textContent = horizontalImages.length;
+        
+        // Mostra pulsante per caricare altre immagini
+        if (page * 12 < totalResults) {
+            loadMoreButton.style.display = 'inline-flex';
+        } else {
+            loadMoreButton.style.display = 'none';
+        }
+        
+    } catch (error) {
+        console.error('Fetch error:', error);
+        showLoading(false);
+        
+        // Fallback: usa dati di esempio se l'API fallisce
+        useSampleImages();
+    }
+}
+
+// Cerca immagini
+async function searchImages(query, page) {
+    if (isLoading) return;
+    
+    isLoading = true;
+    showLoading(true);
+    
+    try {
+        const response = await fetch(
+            `https://api.unsplash.com/search/photos?page=${page}&per_page=12&query=${encodeURIComponent(query)}&orientation=landscape&client_id=${unsplashAccessKey}`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        showLoading(false);
+        isLoading = false;
+        
+        const images = data.results || [];
+        
+        if (images.length === 0) {
+            noResults.style.display = 'block';
+            loadMoreButton.style.display = 'none';
+            return;
+        }
+        
+        // Filtra per immagini orizzontali
+        const horizontalImages = images.filter(img => {
+            if (!img.width || !img.height) return false;
+            const ratio = img.width / img.height;
+            return ratio >= 1.2;
+        });
+        
+        if (horizontalImages.length === 0) {
+            noResults.style.display = 'block';
+            loadMoreButton.style.display = 'none';
+            return;
+        }
+        
+        displayImages(horizontalImages, page > 1);
+        totalResults = data.total || 0;
+        resultsCount.textContent = horizontalImages.length;
+        
+        // Mostra pulsante per caricare altre immagini
+        if (page * 12 < totalResults) {
+            loadMoreButton.style.display = 'inline-flex';
+        } else {
+            loadMoreButton.style.display = 'none';
+        }
+        
+    } catch (error) {
+        console.error('Search error:', error);
+        showLoading(false);
+        isLoading = false;
+        
+        // Fallback: usa dati di esempio
+        useSampleImages();
+    }
+}
+
+// Carica altre immagini
+async function loadMoreImages() {
+    if (isLoading) return;
+    
+    currentPage++;
+    loadMoreButton.disabled = true;
+    loadMoreButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    
+    try {
+        if (currentQuery) {
+            await searchImages(currentQuery, currentPage);
+        } else {
+            await fetchPopularImages(currentPage);
+        }
+    } catch (error) {
+        console.error('Load more error:', error);
+    } finally {
+        loadMoreButton.disabled = false;
+        loadMoreButton.innerHTML = '<i class="fas fa-sync-alt"></i> Load More Horizontal Images';
+    }
+}
+
+// Mostra immagini nella griglia
+function displayImages(images, append = false) {
+    if (!append) {
+        imagesGrid.innerHTML = '';
+    }
+    
+    images.forEach(image => {
+        const imageCard = document.createElement('div');
+        imageCard.className = 'image-card';
+        
+        // Usa URL dell'immagine di dimensioni medie
+        const imageUrl = image.urls?.regular || image.urls?.small || '';
+        const fullImageUrl = image.urls?.full || imageUrl;
+        const photographer = image.user?.name || 'Unknown';
+        const avatarUrl = image.user?.profile_image?.medium || '';
+        const description = image.description || image.alt_description || 'Beautiful horizontal image';
+        const imageId = image.id || Date.now();
+        const width = image.width || 1200;
+        const height = image.height || 800;
+        
+        imageCard.innerHTML = `
+            <div class="image-container">
+                <img src="${imageUrl}" alt="${description}" loading="lazy">
+            </div>
+            <div class="image-info">
+                <div class="photographer">
+                    <img src="${avatarUrl}" alt="${photographer}" class="photographer-avatar">
+                    <span class="photographer-name">${photographer}</span>
+                </div>
+                <p class="image-description-short">${description}</p>
+                <div class="instagram-ready">
+                    <i class="fab fa-instagram"></i>
+                    <span>Horizontal (${width}×${height})</span>
+                </div>
+            </div>
+        `;
+        
+        // Aggiungi evento click per aprire il modal
+        imageCard.addEventListener('click', () => {
+            openImageModal(fullImageUrl, photographer, description, imageId, width, height);
+        });
+        
+        imagesGrid.appendChild(imageCard);
+    });
+}
+
+// Apri modal immagine
+function openImageModal(imageUrl, photographer, description, imageId, width, height) {
+    modalImage.src = imageUrl;
+    modalImage.alt = description;
+    photographerName.textContent = photographer;
+    photographerCredit.textContent = photographer;
+    imageDescription.textContent = description;
+    
+    // Salva dati per il download
+    currentImageUrl = imageUrl;
+    currentImageId = imageId;
+    currentPhotographer = photographer;
+    
+    // Mostra modal
+    imageModal.style.display = 'block';
+}
+
+// Chiudi modal
+function closeModal() {
+    imageModal.style.display = 'none';
+}
+
+// Download immagine
+function downloadImage() {
+    if (!currentImageUrl) return;
+    
+    // Crea elemento temporaneo per il download
+    const link = document.createElement('a');
+    link.href = currentImageUrl;
+    link.download = `instagram-horizontal-${currentImageId}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Feedback visivo
+    const originalText = downloadButton.innerHTML;
+    downloadButton.innerHTML = '<i class="fas fa-check"></i> Download Started!';
+    downloadButton.style.backgroundColor = '#28a745';
+    
+    setTimeout(() => {
+        downloadButton.innerHTML = originalText;
+        downloadButton.style.backgroundColor = '';
+    }, 2000);
+}
+
+// Mostra/nascondi indicatore di caricamento
+function showLoading(show) {
+    if (show) {
+        loadingIndicator.style.display = 'flex';
+        loadMoreButton.style.display = 'none';
+        searchButton.disabled = true;
+    } else {
+        loadingIndicator.style.display = 'none';
+        searchButton.disabled = false;
+    }
+}
+
+// Mostra errore
+function showError() {
+    showLoading(false);
+    noResults.style.display = 'block';
+    noResults.innerHTML = `
+        <i class="fas fa-exclamation-triangle no-results-icon"></i>
+        <h3>Connection Issue or Invalid Access Key</h3>
+        <p>Showing sample images. For full functionality, add your Unsplash Access Key in script.js</p>
+    `;
+    
+    // Carica immagini di esempio
+    useSampleImages();
+}
+
+// Immagini di esempio per fallback
+function useSampleImages() {
+    const sampleImages = [
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+                full: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+            },
+            user: {
+                name: 'Sample Photographer',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1506905925346-21bda4d32df4' }
+            },
+            description: 'Beautiful mountain landscape',
+            alt_description: 'Mountain landscape',
+            id: 'sample1',
+            width: 1350,
+            height: 900
+        },
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+                full: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+            },
+            user: {
+                name: 'Sample Photographer',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1519681393784-d120267933ba' }
+            },
+            description: 'Sea coast with rocks',
+            alt_description: 'Sea coast',
+            id: 'sample2',
+            width: 1350,
+            height: 900
+        },
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+                full: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+            },
+            user: {
+                name: 'Sample Photographer',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1493246507139-91e8fad9978e' }
+            },
+            description: 'Italian countryside',
+            alt_description: 'Italian landscape',
+            id: 'sample3',
+            width: 1350,
+            height: 900
+        }
+    ];
+    
+    displayImages(sampleImages);
+    resultsCount.textContent = sampleImages.length;
+    loadMoreButton.style.display = 'none';
+}
+
+// Imposta valore iniziale della ricerca
+searchInput.value = "Italy";
