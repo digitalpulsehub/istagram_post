@@ -46,3 +46,41 @@ vertical-image-search/
 python -m http.server 8000
 
 const unsplashAccessKey = 'YOUR_ACCESS_KEY_HERE';
+
+
+## 🎯 Instructions for GitHub
+
+1. **Create a new repository** on GitHub
+2. **Name it**: `vertical-image-search` (or your preferred name)
+3. **Upload the three files**:
+   - `index.html`
+   - `style.css`
+   - `script.js`
+4. **Create a new file** named `README.md`
+5. **Copy and paste** the above content
+6. **Update the following** in the README:
+   - Replace `yourusername` with your GitHub username
+   - Add your actual GitHub Pages link in the "Live Demo" section
+   - Customize any other details as needed
+
+## 📦 Additional Files You Might Want
+
+Optional files to add to your repository:
+
+1. **LICENSE** - MIT License file
+2. **.gitignore** - To ignore unnecessary files
+3. **favicon.ico** - Custom favicon
+4. **screenshot.png** - Preview image for README
+
+## 🔗 Quick Deploy to GitHub Pages
+
+After pushing your code:
+
+1. Go to your repository on GitHub
+2. Click "Settings" → "Pages"
+3. Under "Source", select "Deploy from a branch"
+4. Choose "main" branch and "/ (root)" folder
+5. Click "Save"
+6. Your site will be live at: `https://[your-username].github.io/vertical-image-search/`
+
+The README is now ready! Your repository will look professional and users will have clear instructions on how to use and deploy the project. 🚀
