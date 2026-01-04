@@ -1,11 +1,7 @@
 // Unsplash API Configuration
-// Sostituisci con il tuo Access Key di Unsplash
 const unsplashAccessKey = '_f2bL-3s-wq6HC7M_0P-9GDggh5aphw9SN1xSgVa3ho';
 
-// Se non hai un Access Key, lascia la stringa vuota e il sito mostrerà immagini di esempio
-// const unsplashAccessKey = '';
-
-// Stato dell'applicazione
+// Application State
 let currentPage = 1;
 let currentQuery = '';
 let isLoading = false;
@@ -13,6 +9,8 @@ let totalResults = 0;
 let currentImageUrl = '';
 let currentImageId = '';
 let currentPhotographer = '';
+let currentWidth = 0;
+let currentHeight = 0;
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
@@ -31,26 +29,21 @@ const photographerName = document.getElementById('photographerName');
 const photographerCredit = document.getElementById('photographerCredit');
 const imageDescription = document.getElementById('imageDescription');
 const downloadButton = document.getElementById('downloadButton');
+const imageDimensions = document.getElementById('imageDimensions');
 
-// Inizializzazione
+// Initialize application
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Application initialized');
-    if (unsplashAccessKey && unsplashAccessKey !== 'TUO_ACCESS_KEY_QUI') {
-        loadPopularImages();
-    } else {
-        // Mostra immagini di esempio se non c'è un access key
-        showError();
-        useSampleImages();
-    }
+    console.log('Vertical Image Search - Initialized');
+    loadPopularImages();
     setupEventListeners();
 });
 
-// Configurazione event listeners
+// Setup all event listeners
 function setupEventListeners() {
-    // Pulsante di ricerca
+    // Search button click
     searchButton.addEventListener('click', performSearch);
     
-    // Ricerca con tasto Invio
+    // Search on Enter key
     searchInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -58,7 +51,7 @@ function setupEventListeners() {
         }
     });
     
-    // Suggerimenti di ricerca
+    // Search suggestion tags
     suggestionTags.forEach(tag => {
         tag.addEventListener('click', function() {
             const keyword = this.getAttribute('data-keyword');
@@ -67,31 +60,31 @@ function setupEventListeners() {
         });
     });
     
-    // Carica altre immagini
+    // Load more images button
     loadMoreButton.addEventListener('click', loadMoreImages);
     
-    // Chiudi modal
+    // Modal close button
     modalClose.addEventListener('click', closeModal);
     
-    // Chiudi modal cliccando fuori
+    // Close modal when clicking outside
     imageModal.addEventListener('click', function(e) {
         if (e.target === imageModal) {
             closeModal();
         }
     });
     
-    // Chiudi modal con ESC
+    // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && imageModal.style.display === 'block') {
             closeModal();
         }
     });
     
-    // Download immagine
+    // Download image button
     downloadButton.addEventListener('click', downloadImage);
 }
 
-// Esegui ricerca
+// Perform search function
 async function performSearch() {
     const query = searchInput.value.trim();
     
@@ -118,11 +111,11 @@ async function performSearch() {
     }
 }
 
-// Carica immagini popolari
+// Load popular vertical images
 async function loadPopularImages() {
     currentQuery = '';
     currentPage = 1;
-    resultsTitle.textContent = 'Popular Horizontal Images';
+    resultsTitle.textContent = 'Popular Vertical Images';
     
     // Reset UI
     imagesGrid.innerHTML = '';
@@ -131,69 +124,63 @@ async function loadPopularImages() {
     showLoading(true);
     
     try {
-        await fetchPopularImages(currentPage);
+        await fetchPopularImages();
     } catch (error) {
         console.error('Error loading popular images:', error);
         showError();
     }
 }
 
-// Fetch immagini popolari (usa la ricerca con query "landscape")
-async function fetchPopularImages(page = 1) {
+// Fetch popular vertical images from Unsplash
+async function fetchPopularImages() {
     showLoading(true);
     
     try {
         const response = await fetch(
-            `https://api.unsplash.com/search/photos?page=${page}&per_page=12&query=landscape&orientation=landscape&client_id=${unsplashAccessKey}`
+            `https://api.unsplash.com/photos/random?count=12&orientation=portrait&client_id=${unsplashAccessKey}`
         );
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const data = await response.json();
+        const images = await response.json();
         showLoading(false);
-        
-        const images = data.results || [];
         
         if (!images || images.length === 0) {
             noResults.style.display = 'block';
             return;
         }
         
-        // Filtra ulteriormente per immagini orizzontali
-        const horizontalImages = images.filter(img => {
+        // Filter for true vertical images (height > width)
+        const verticalImages = images.filter(img => {
             if (!img.width || !img.height) return false;
-            const ratio = img.width / img.height;
-            return ratio >= 1.2; // Assicura che siano orizzontali
+            const ratio = img.height / img.width;
+            // Instagram Stories ratio is approximately 9:16 = 1.78
+            return ratio >= 1.5; // Allow some flexibility
         });
         
-        if (horizontalImages.length === 0) {
+        if (verticalImages.length === 0) {
             noResults.style.display = 'block';
             return;
         }
         
-        displayImages(horizontalImages, page > 1);
-        totalResults = data.total || 0;
-        resultsCount.textContent = horizontalImages.length;
+        displayImages(verticalImages);
+        resultsCount.textContent = verticalImages.length;
         
-        // Mostra pulsante per caricare altre immagini
-        if (page * 12 < totalResults) {
+        // Show load more button if we got enough images
+        if (verticalImages.length >= 12) {
             loadMoreButton.style.display = 'inline-flex';
-        } else {
-            loadMoreButton.style.display = 'none';
         }
         
     } catch (error) {
         console.error('Fetch error:', error);
         showLoading(false);
-        
-        // Fallback: usa dati di esempio se l'API fallisce
-        useSampleImages();
+        useSampleImages(); // Fallback to sample images
     }
 }
 
-// Cerca immagini
+// Search for vertical images
 async function searchImages(query, page) {
     if (isLoading) return;
     
@@ -202,7 +189,7 @@ async function searchImages(query, page) {
     
     try {
         const response = await fetch(
-            `https://api.unsplash.com/search/photos?page=${page}&per_page=12&query=${encodeURIComponent(query)}&orientation=landscape&client_id=${unsplashAccessKey}`
+            `https://api.unsplash.com/search/photos?page=${page}&per_page=12&query=${encodeURIComponent(query)}&orientation=portrait&client_id=${unsplashAccessKey}`
         );
         
         if (!response.ok) {
@@ -221,24 +208,24 @@ async function searchImages(query, page) {
             return;
         }
         
-        // Filtra per immagini orizzontali
-        const horizontalImages = images.filter(img => {
+        // Filter for true vertical images
+        const verticalImages = images.filter(img => {
             if (!img.width || !img.height) return false;
-            const ratio = img.width / img.height;
-            return ratio >= 1.2;
+            const ratio = img.height / img.width;
+            return ratio >= 1.5;
         });
         
-        if (horizontalImages.length === 0) {
+        if (verticalImages.length === 0) {
             noResults.style.display = 'block';
             loadMoreButton.style.display = 'none';
             return;
         }
         
-        displayImages(horizontalImages, page > 1);
+        displayImages(verticalImages, page > 1);
         totalResults = data.total || 0;
-        resultsCount.textContent = horizontalImages.length;
+        resultsCount.textContent = verticalImages.length;
         
-        // Mostra pulsante per caricare altre immagini
+        // Show load more button if there are more results
         if (page * 12 < totalResults) {
             loadMoreButton.style.display = 'inline-flex';
         } else {
@@ -249,13 +236,11 @@ async function searchImages(query, page) {
         console.error('Search error:', error);
         showLoading(false);
         isLoading = false;
-        
-        // Fallback: usa dati di esempio
-        useSampleImages();
+        useSampleImages(); // Fallback to sample images
     }
 }
 
-// Carica altre immagini
+// Load more images for pagination
 async function loadMoreImages() {
     if (isLoading) return;
     
@@ -267,17 +252,16 @@ async function loadMoreImages() {
         if (currentQuery) {
             await searchImages(currentQuery, currentPage);
         } else {
-            await fetchPopularImages(currentPage);
+            await fetchPopularImages();
         }
     } catch (error) {
         console.error('Load more error:', error);
-    } finally {
         loadMoreButton.disabled = false;
-        loadMoreButton.innerHTML = '<i class="fas fa-sync-alt"></i> Load More Horizontal Images';
+        loadMoreButton.innerHTML = '<i class="fas fa-sync-alt"></i> Load More Vertical Images';
     }
 }
 
-// Mostra immagini nella griglia
+// Display images in the grid
 function displayImages(images, append = false) {
     if (!append) {
         imagesGrid.innerHTML = '';
@@ -287,15 +271,15 @@ function displayImages(images, append = false) {
         const imageCard = document.createElement('div');
         imageCard.className = 'image-card';
         
-        // Usa URL dell'immagine di dimensioni medie
+        // Use regular size for grid, full size for modal/download
         const imageUrl = image.urls?.regular || image.urls?.small || '';
         const fullImageUrl = image.urls?.full || imageUrl;
-        const photographer = image.user?.name || 'Unknown';
-        const avatarUrl = image.user?.profile_image?.medium || '';
-        const description = image.description || image.alt_description || 'Beautiful horizontal image';
+        const photographer = image.user?.name || 'Unknown Photographer';
+        const avatarUrl = image.user?.profile_image?.medium || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+        const description = image.description || image.alt_description || 'Beautiful vertical image';
         const imageId = image.id || Date.now();
-        const width = image.width || 1200;
-        const height = image.height || 800;
+        const width = image.width || 1080;
+        const height = image.height || 1920;
         
         imageCard.innerHTML = `
             <div class="image-container">
@@ -309,12 +293,12 @@ function displayImages(images, append = false) {
                 <p class="image-description-short">${description}</p>
                 <div class="instagram-ready">
                     <i class="fab fa-instagram"></i>
-                    <span>Horizontal (${width}×${height})</span>
+                    <span>Vertical • ${width}×${height}</span>
                 </div>
             </div>
         `;
         
-        // Aggiungi evento click per aprire il modal
+        // Add click event to open modal
         imageCard.addEventListener('click', () => {
             openImageModal(fullImageUrl, photographer, description, imageId, width, height);
         });
@@ -323,124 +307,171 @@ function displayImages(images, append = false) {
     });
 }
 
-// Apri modal immagine
+// Open image modal with full details
 function openImageModal(imageUrl, photographer, description, imageId, width, height) {
     modalImage.src = imageUrl;
     modalImage.alt = description;
     photographerName.textContent = photographer;
     photographerCredit.textContent = photographer;
     imageDescription.textContent = description;
+    imageDimensions.textContent = `${width}×${height}`;
     
-    // Salva dati per il download
+    // Store current image data for download
     currentImageUrl = imageUrl;
     currentImageId = imageId;
     currentPhotographer = photographer;
+    currentWidth = width;
+    currentHeight = height;
     
-    // Mostra modal
+    // Show modal with animation
     imageModal.style.display = 'block';
 }
 
-// Chiudi modal
+// Close modal
 function closeModal() {
     imageModal.style.display = 'none';
 }
 
-// Download immagine
+// Download image
 function downloadImage() {
     if (!currentImageUrl) return;
     
-    // Crea elemento temporaneo per il download
+    // Create temporary link for download
     const link = document.createElement('a');
     link.href = currentImageUrl;
-    link.download = `instagram-horizontal-${currentImageId}.jpg`;
+    link.download = `instagram-vertical-${currentImageId}-${currentWidth}x${currentHeight}.jpg`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     
-    // Feedback visivo
+    // Visual feedback
     const originalText = downloadButton.innerHTML;
     downloadButton.innerHTML = '<i class="fas fa-check"></i> Download Started!';
-    downloadButton.style.backgroundColor = '#28a745';
+    downloadButton.style.background = 'linear-gradient(45deg, #20c997, #28a745)';
     
     setTimeout(() => {
         downloadButton.innerHTML = originalText;
-        downloadButton.style.backgroundColor = '';
+        downloadButton.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
     }, 2000);
 }
 
-// Mostra/nascondi indicatore di caricamento
+// Show/hide loading indicator
 function showLoading(show) {
     if (show) {
         loadingIndicator.style.display = 'flex';
         loadMoreButton.style.display = 'none';
-        searchButton.disabled = true;
     } else {
         loadingIndicator.style.display = 'none';
-        searchButton.disabled = false;
     }
 }
 
-// Mostra errore
+// Show error state
 function showError() {
     showLoading(false);
     noResults.style.display = 'block';
     noResults.innerHTML = `
-        <i class="fas fa-exclamation-triangle no-results-icon"></i>
-        <h3>Connection Issue or Invalid Access Key</h3>
-        <p>Showing sample images. For full functionality, add your Unsplash Access Key in script.js</p>
+        <div class="no-results-icon-container">
+            <i class="fas fa-wifi-slash"></i>
+        </div>
+        <h3>Connection Issue</h3>
+        <p>Using sample images. Add your Unsplash Access Key for full functionality.</p>
     `;
     
-    // Carica immagini di esempio
     useSampleImages();
 }
 
-// Immagini di esempio per fallback
+// Sample vertical images for fallback
 function useSampleImages() {
     const sampleImages = [
         {
             urls: {
-                regular: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-                full: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+                regular: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                full: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
             },
             user: {
-                name: 'Sample Photographer',
-                profile_image: { medium: 'https://images.unsplash.com/profile-1506905925346-21bda4d32df4' }
+                name: 'Jane Smith',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' }
             },
-            description: 'Beautiful mountain landscape',
-            alt_description: 'Mountain landscape',
-            id: 'sample1',
-            width: 1350,
-            height: 900
+            description: 'Portrait of a woman looking away',
+            alt_description: 'Portrait photography',
+            id: 'sample-vertical-1',
+            width: 800,
+            height: 1200
         },
         {
             urls: {
-                regular: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-                full: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+                regular: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                full: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
             },
             user: {
-                name: 'Sample Photographer',
-                profile_image: { medium: 'https://images.unsplash.com/profile-1519681393784-d120267933ba' }
+                name: 'John Doe',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' }
             },
-            description: 'Sea coast with rocks',
-            alt_description: 'Sea coast',
-            id: 'sample2',
-            width: 1350,
-            height: 900
+            description: 'Fashion model in urban environment',
+            alt_description: 'Fashion photography',
+            id: 'sample-vertical-2',
+            width: 800,
+            height: 1200
         },
         {
             urls: {
-                regular: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-                full: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'
+                regular: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                full: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
             },
             user: {
-                name: 'Sample Photographer',
-                profile_image: { medium: 'https://images.unsplash.com/profile-1493246507139-91e8fad9978e' }
+                name: 'Alex Johnson',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' }
             },
-            description: 'Italian countryside',
-            alt_description: 'Italian landscape',
-            id: 'sample3',
-            width: 1350,
-            height: 900
+            description: 'Man portrait with natural lighting',
+            alt_description: 'Male portrait',
+            id: 'sample-vertical-3',
+            width: 800,
+            height: 1200
+        },
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1494790108755-2616b786d4d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                full: 'https://images.unsplash.com/photo-1494790108755-2616b786d4d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            },
+            user: {
+                name: 'Maria Garcia',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1494790108755-2616b786d4d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' }
+            },
+            description: 'Smiling woman portrait in studio',
+            alt_description: 'Female portrait',
+            id: 'sample-vertical-4',
+            width: 800,
+            height: 1200
+        },
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                full: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            },
+            user: {
+                name: 'David Lee',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' }
+            },
+            description: 'Model posing with dramatic lighting',
+            alt_description: 'Studio photography',
+            id: 'sample-vertical-5',
+            width: 800,
+            height: 1200
+        },
+        {
+            urls: {
+                regular: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                full: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+            },
+            user: {
+                name: 'Sophia Williams',
+                profile_image: { medium: 'https://images.unsplash.com/profile-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' }
+            },
+            description: 'Woman with artistic makeup',
+            alt_description: 'Beauty portrait',
+            id: 'sample-vertical-6',
+            width: 800,
+            height: 1200
         }
     ];
     
@@ -449,6 +480,5 @@ function useSampleImages() {
     loadMoreButton.style.display = 'none';
 }
 
-// Imposta valore iniziale della ricerca
-searchInput.value = "Italy";
-
+// Set initial search value
+searchInput.value = "portrait";
