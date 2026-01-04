@@ -1,6 +1,6 @@
 // Unsplash API Configuration
 // Sostituisci con il tuo Access Key di Unsplash
-const unsplashAccessKey = 'TUO_ACCESS_KEY_QUI';
+const unsplashAccessKey = '_f2bL-3s-wq6HC7M_0P-9GDggh5aphw9SN1xSgVa3ho';
 
 // Se non hai un Access Key, lascia la stringa vuota e il sito mostrerà immagini di esempio
 // const unsplashAccessKey = '';
@@ -451,3 +451,4 @@ function useSampleImages() {
 
 // Imposta valore iniziale della ricerca
 searchInput.value = "Italy";
+
